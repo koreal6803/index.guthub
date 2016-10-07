@@ -1,202 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+<html>
+<head>
+<title>Facebook Login JavaScript Example</title>
+<meta charset="UTF-8">
+</head>
+<body>
+<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not your app.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+    }
+  }
 
-    <title>回測磁鐵！簡單好用的股票幫手</title>
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
 
-    <!-- Bootstrap core CSS -->
-<!-- 最新編譯和最佳化的 CSS -->
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '{your-app-id}',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.5' // use graph api version 2.5
+  });
 
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
 
-<!-- 選擇性佈景主題 -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+  };
 
-<!-- 最新編譯和最佳化的 JavaScript -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="nodes.js" ></script>
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+</script>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
+<!--
+  Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
+-->
 
-    <!-- Custom styles for this template -->
-    <link href="jumbotron.css" rel="stylesheet">
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <!--<script src="../../assets/js/ie-emulation-modes-warning.js"></script>-->
+<div id="status">
+</div>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body style="text-align:center;height:100%">
-    <div id="loading" style="padding:200px">
-      <img id="loading-image" style="width:100px;height:100px;" class="img-responsive center-block" src="http://app.ownminigames.com/img/loading.gif" alt="Loading..." />
-    </div>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container" >
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">回測磁鐵</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse" >
-          <form class="navbar-form navbar-right">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div><!--/.navbar-collapse -->
-      </div>
-    </nav>
-
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron" style="background-image:url(http://img.netbian.com/file/20110304/85958fb804c40c2fbddcf71649053167.jpg)">
-      <div class="container" style="color:white">
-        <h1>最佳的投資利器！</h1>
-        <p>寫回測不用打程式！不同於複雜的程式撰寫回測工具，我們運用簡單的拖拉方式，賦予您一想不到的強大回測功能，只需要動一動滑鼠，打造專屬於您的回測，並藉由各種分析來協助您將您的策略越磨越利。</p>
-      </div>
-    </div>
-
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>輕鬆拖拉，簡單易懂</h2>
-          <p>藉由間單的拖易，彈指之間完成複雜的策略系統！ </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>買賣磁鐵，增強策略</h2>
-          <p>尋找坊間神人的磁鐵，讓您的策略達到前所未有的境界！ </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>自動買賣，輕鬆賺錢</h2>
-          <p>自動執行策略，不用緊盯看盤也能享有獲利！</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-      </div>
-    <div id='nodes'></div>
-    <iframe src="" id="results-view" style="width:100%;height:100%;border-width:0px"></iframe>
-    </div>
-    <p><a style="position:fixed;bottom:10px;right:10px;" onclick="sim()" class="btn btn-primary btn-lg"  role="button">磁力回測</a></p>
-    <script>
-      $('#loading').hide();
-      init();
-
-      function sim()
-      {
-        $('#loading').show();
-        // Getting the height of the document
-        to_c = [-1,-1,-1,-1,-1,-1,4,5,6,1,2,3,-1,16,17,18,13,14,15,-1];
-        data = svg.selectAll("circle").data();
-        var s1 = [];
-        var s2 = [];
-        for (var i = 0 ; i < data.length ; i += 1)
-        {
-          if (to_c[i] == -1 || i < 3 || data[i].fixed == true)
-            continue;
-          if (categorys[i] == 0)
-            continue;
-          console.log(i+' '+to_c[i])
-          switch (categorys[i])
-          {
-            case 1:
-              if (s1[data[i].level/50 - 2] === undefined)
-                s1[data[i].level/50 - 2] = ""
-              s1[data[i].level/50 - 2] += "" + to_c[i] + '^';
-              break;
-            case 2:
-              if (s2[data[i].level/50 - 2] === undefined)
-                s2[data[i].level/50 - 2] = ""
-              s2[data[i].level/50 - 2] += "" + to_c[i] + '^';
-              break;
-            default:
-              console.log('bug!!!');
-          }
-          console.log(s1);
-          console.log(s2);
-        }
-
-        var combine = "";
-        for (var i = 0 ; i < s1.length ; i += 1)
-        {
-          if (s1[i] === undefined || s1[i].length == 0)
-            continue;
-          var s = s1[i].substring(0, s1[i].length - 1);
-          if (s === undefined)
-            continue
-          combine += s + '+';
-        }
-        if (s1.length == 0)
-        {
-          alert('沒有入場策略喔！請選擇進場策略～');
-          $('#loading').hide();
-          return;
-        }
-        combine = combine.substring(0,combine.length - 1) + '_';
-        console.log(combine);
-        for (var i = 0 ; i < s2.length ; i += 1)
-        {
-          if (s2[i] === undefined || s2[i].length == 0)
-            continue;
-          var s = s2[i].substring(0, s2[i].length - 1);
-          if (s === undefined)
-            continue
-          combine += s + '+';
-        }
-        if (combine.length > 1)
-        combine = combine.substring(0,combine.length - 1);
-        if (s2.length == 0)
-          combine += '_13'
-
-        var stock = "";
-        if (person == -1)
-          stock =  "0050"
-        else
-          stock = person;
-        
-        var iframe = $('#results-view');
-        console.log(iframe)
-        iframe.attr('src','http://localhost:8888/start?'+stock+"_"+combine);
-        document.getElementById('results-view').onload = function() {
-          this.style.height=500+'px';
-          $('#loading').hide();
-        };
-
-
-      }
-    </script>
-
-    
-      <hr>
-
-      <footer>
-        <p>&copy; 2016 LaDs Company, Inc.</p>
-      </footer>
-    </div> <!-- /container -->
-  </body>
+</body>
 </html>
